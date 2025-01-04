@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal LMS Matematika</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #eef7fc;
+        }
+
+        .login-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+            margin: 10vh auto;
+        }
+
+        .login-container img {
+            max-width: 150px;
+            margin-bottom: 20px;
+        }
+
+        .login-container input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .button-wrapper {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .login-container button {
+            flex: 1;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .login-container button:hover {
+            background-color: #0056b3;
+        }
+
+        .register-button {
+            background-color: #28a745;
+        }
+
+        .register-button:hover {
+            background-color: #218838;
+        }
+
+        .dashboard {
+            display: none;
+            padding: 20px;
+            background-color: #fdfdfd;
+        }
+
+        .dashboard img {
+            display: block;
+            margin: 0 auto 20px;
+            max-width: 150px;
+            border-radius: 50%;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+
+        #customHtmlArea {
+            border: 1px dashed #ccc;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .login-container {
+                padding: 15px;
+            }
+
+            th, td {
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .button-wrapper {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container" id="loginPage">
+        <img src="https://smpsmanragunan.sch.id/wp-content/uploads/2023/12/cropped-Screenshot-2023-07-17-16.52.29-1.png" alt="Logo LMS Matematika">
+        <h1>Login Portal LMS Matematika</h1>
+        <input type="text" id="username" placeholder="NISN">
+        <input type="password" id="password" placeholder="Password">
+        <div class="button-wrapper">
+            <button onclick="login()">Login</button>
+            <button class="register-button" onclick="register()">Register</button>
+        </div>
+    </div>
+
+    <div class="dashboard" id="dashboardPage">
+        <img id="studentPhoto" src="#" alt="Foto Siswa">
+        <h1>Dashboard LMS Matematika</h1>
+        <h2>Selamat datang, <span id="studentName">Siswa</span></h2>
+
+        <h3>Menu Belajar</h3>
+        <div class="button-group">
+            <button onclick="navigateToPage('Materi')">Materi</button>
+            <button onclick="navigateToPage('Tugas')">Tugas</button>
+            <button onclick="navigateToPage('Ujian')">Ujian</button>
+            <button onclick="navigateToPage('Diskusi')">Diskusi</button>
+            <button onclick="navigateToPage('Nilai')">Nilai</button>
+            <button onclick="navigateToPage('Bonus')">Bonus</button>
+        </div>
+
+        <h3>Data Akun</h3>
+        <table>
+            <tr>
+                <th>NISN</th>
+                <th>Nama</th>
+                <th>Kelas</th>
+                <th>Cabang Olahraga</th>
+            </tr>
+            <tbody id="studentData"></tbody>
+        </table>
+
+        <h3>Custom HTML</h3>
+        <div id="customHtmlArea">
+ <center><iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTVSN7lrne-QLLZ0GdkSri4KeLMUEkrPk1Bmq3MT85ylYc7uzsF2mLyCLjbrqjZmbJ4sg0tXrihCtct/pubhtml?gid=1391696265&single=true" width="640" height="300" frameborder="0" marginheight="0" marginwidth="0">Memuat…</iframe></center>
+            <center><iframe src="https://docs.google.com/forms/d/e/1FAIpQLSf9NZvZf7YZ9x-vbc8XcI1rsIwPOFou1edxYZPM5exWYGWzbw/viewform?embedded=true" width="640" height="416" frameborder="0" marginheight="0" marginwidth="0">Memuat…</iframe></center>
+        </div>
+
+        <button onclick="logout()" style="background-color: red; color: white;">Logout</button>
+    </div>
+
+    <div id="contentPage" style="display: none; padding: 20px;">
+        <h1 id="pageTitle">Judul Halaman</h1>
+        <p id="pageContent">Konten halaman akan muncul di sini.</p>
+        <div id="customHtmlPage" style="border: 1px dashed #ccc; padding: 20px; margin-top: 20px;">
+            <p>Ini adalah area custom HTML pada halaman <span id="currentPageTitle"></span>.</p>
+        </div>
+        <button onclick="backToDashboard()">Kembali ke Dashboard</button>
+    </div>
+
+    <script>
+        const SPREADSHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTXwFpOs56U6lEdSzOGbltD9ayiLcf7JfVEkjHVJIi826jprUAFjUlRBjbqjZV9nNDSTEhGuW6vPAbt/pub?gid=357731592&single=true&output=csv";
+
+        let students = [];
+
+        async function fetchStudentData() {
+            try {
+                const response = await fetch(SPREADSHEET_URL);
+                const csvText = await response.text();
+                students = parseCSV(csvText);
+                console.log("Data siswa berhasil dimuat:", students);
+            } catch (error) {
+                console.error("Gagal memuat data siswa:", error);
+            }
+        }
+
+        function parseCSV(csv) {
+            const rows = csv.split("\n");
+            const headers = rows[0].split(",").map(h => h.trim());
+            return rows.slice(1).map(row => {
+                const values = row.split(",");
+                return headers.reduce((acc, header, index) => {
+                    acc[header] = values[index]?.trim();
+                    return acc;
+                }, {});
+            });
+        }
+
+   async function login() {
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+
+    if (!students.length) {
+        alert("Data siswa belum dimuat. Mohon tunggu sebentar.");
+        return;
+    }
+
+    // Cek apakah username dan password cocok dengan data siswa
+    const student = students.find(s => s.NISN === username && s.Password === password);
+
+    if (student) {
+        // Cek apakah user sudah login
+        const loggedInUsers = JSON.parse(localStorage.getItem("loggedInUsers")) || [];
+        if (loggedInUsers.includes(username)) {
+            alert("Akun ini sudah login di perangkat lain.");
+            return;
+        }
+
+        // Simpan status login ke Local Storage
+        loggedInUsers.push(username);
+        localStorage.setItem("loggedInUsers", JSON.stringify(loggedInUsers));
+
+        // Tampilkan halaman dashboard
+        document.getElementById("loginPage").style.display = "none";
+        document.getElementById("dashboardPage").style.display = "block";
+
+        document.getElementById("studentName").textContent = student["Nama Siswa"] || "Pengguna";
+        document.getElementById("studentPhoto").src = student["Photo"] || "https://via.placeholder.com/150";
+
+        const tableBody = document.getElementById("studentData");
+        tableBody.innerHTML = `
+            <tr>
+                <td>${student.NISN}</td>
+                <td>${student["Nama Siswa"]}</td>
+                <td>${student.Kelas}</td>
+                <td>${student["Cabang Olahraga"]}</td>
+            </tr>
+        `;
+    } else {
+        alert("Login gagal. NISN atau Password salah!");
+    }
+}
+
+function logout() {
+    const username = document.getElementById("username").value;
+
+    // Hapus status login dari Local Storage
+    const loggedInUsers = JSON.parse(localStorage.getItem("loggedInUsers")) || [];
+    const updatedUsers = loggedInUsers.filter(user => user !== username);
+    localStorage.setItem("loggedInUsers", JSON.stringify(updatedUsers));
+
+    // Tampilkan halaman login kembali
+    document.getElementById("dashboardPage").style.display = "none";
+    document.getElementById("loginPage").style.display = "block";
+}
+
+
+       function navigateToPage(pageName) {
+    document.getElementById("dashboardPage").style.display = "none";
+    document.getElementById("contentPage").style.display = "block";
+    document.getElementById("pageTitle").textContent = pageName;
+
+    const pageContent = document.getElementById("pageContent");
+
+    if (pageName === "Materi") {
+        pageContent.innerHTML = `
+            <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTVSN7lrne-QLLZ0GdkSri4KeLMUEkrPk1Bmq3MT85ylYc7uzsF2mLyCLjbrqjZmbJ4sg0tXrihCtct/pubhtml?gid=0&single=true" 
+                    width="100%" 
+                    height="600" 
+                    frameborder="0">
+            </iframe>
+        `;
+    } else if (pageName === "Tugas") {
+        pageContent.innerHTML = `
+            <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTVSN7lrne-QLLZ0GdkSri4KeLMUEkrPk1Bmq3MT85ylYc7uzsF2mLyCLjbrqjZmbJ4sg0tXrihCtct/pubhtml?gid=964570737&single=true" 
+                    width="100%" 
+                    height="600" 
+                    frameborder="0">
+            </iframe>
+        `;
+    } else if (pageName === "Ujian") {
+        pageContent.innerHTML = `
+            <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTVSN7lrne-QLLZ0GdkSri4KeLMUEkrPk1Bmq3MT85ylYc7uzsF2mLyCLjbrqjZmbJ4sg0tXrihCtct/pubhtml?gid=259709837&single=true" 
+                    width="100%" 
+                    height="600" 
+                    frameborder="0">
+            </iframe>
+        `;
+    } else if (pageName === "Diskusi") {
+        pageContent.innerHTML = `
+            <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTVSN7lrne-QLLZ0GdkSri4KeLMUEkrPk1Bmq3MT85ylYc7uzsF2mLyCLjbrqjZmbJ4sg0tXrihCtct/pubhtml?gid=1140900865&single=true" 
+                    width="100%" 
+                    height="600" 
+                    frameborder="0">
+            </iframe>
+        `;
+    } else if (pageName === "Nilai") {
+        pageContent.innerHTML = `
+            <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTVSN7lrne-QLLZ0GdkSri4KeLMUEkrPk1Bmq3MT85ylYc7uzsF2mLyCLjbrqjZmbJ4sg0tXrihCtct/pubhtml?gid=270864767&single=true" 
+                    width="100%" 
+                    height="600" 
+                    frameborder="0">
+            </iframe>
+        `;
+    } else if (pageName === "Bonus") {
+        pageContent.innerHTML = `
+            <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTVSN7lrne-QLLZ0GdkSri4KeLMUEkrPk1Bmq3MT85ylYc7uzsF2mLyCLjbrqjZmbJ4sg0tXrihCtct/pubhtml?gid=1932887571&single=true" 
+                    width="100%" 
+                    height="600" 
+                    frameborder="0">
+            </iframe>
+        `;
+    } else {
+        pageContent.textContent = `Ini adalah halaman ${pageName}.`;
+    }
+}
+
+ function backToDashboard() {
+            document.getElementById("contentPage").style.display = "none";
+            document.getElementById("dashboardPage").style.display = "block";
+        }
+
+
+        function register() {
+            const registerUrl = "https://docs.google.com/forms/d/e/1FAIpQLSdzsAGdD-nCD0eBFdiLJ7oIea-ovzHhbySk6JLyoB8LR5COkQ/viewform";
+            window.open(registerUrl, "_blank");
+        }
+
+        fetchStudentData();
+    </script>
+</body>
+</html>
+
